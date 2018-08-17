@@ -1,16 +1,17 @@
-// find_links_in_page.go
 package main
 
 import (
 	"fmt"
 	"log"
 	"net/http"
+	"net/url"
 
 	"github.com/PuerkitoBio/goquery"
 )
 
-// This will get called for each HTML element found
-func processElement(index int, element *goquery.Selection) {
+// processElement will be called for each HTML element found
+func processElement(_ int, element *goquery.Selection) {
+	fmt.Println(element.Text())
 	// See if the href attribute exists on the element
 	href, exists := element.Attr("href")
 	if exists {
@@ -20,10 +21,11 @@ func processElement(index int, element *goquery.Selection) {
 
 func main() {
 	// Make HTTP request
-	var URL string
-	fmt.Print("Write url: ")
-	fmt.Scan(&URL)
-	response, err := http.Get(URL)
+	var query string
+	fmt.Print("What do you want to search in GOOGLE: ")
+	fmt.Scan(&query)
+	escapedQuery := url.QueryEscape(query)
+	response, err := http.Get("http://google.com/search?q=" + escapedQuery)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -38,4 +40,3 @@ func main() {
 	// defined earlier
 	document.Find("h3.r a:not(.l)").Each(processElement)
 }
-
